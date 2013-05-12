@@ -75,6 +75,7 @@ public class Player {
     public int getLives() { return lives; }
     
     public boolean isRecovering() { return recovering; }
+    public boolean isDead() { return lives <= 0; }
     
 	public void setLeft(boolean b) { left = b; }
 	public void setRight(boolean b) { right = b; }

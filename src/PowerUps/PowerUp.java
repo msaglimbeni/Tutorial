@@ -16,6 +16,7 @@ public class PowerUp {
 	//1 -- +1 Life
 	//2 -- +1 Power
 	//3 -- +2 Power
+	//4 -- slow down time
 	
 	//Constructor
 	public PowerUp(int type, double x, double y) {
@@ -35,6 +36,10 @@ public class PowerUp {
 		if(type == 3) {
 			color1 = Color.YELLOW;
 			r = 5;
+		}
+		if(type == 4) {
+			color1 = Color.WHITE;
+			r = 3;
 		}
 	}
 	

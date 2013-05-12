@@ -27,6 +27,8 @@ public class Enemy {
 	private boolean hit;
 	private long hitTimer;
 	
+	private boolean slow;
+	
 	//CONSTRUCTOR
 	public Enemy(int type, int rank) {
 		this.type = type;
@@ -34,7 +36,8 @@ public class Enemy {
 		
 		//Default enemy #1;
 		if(type == 1) {
-			color1 = Color.BLUE;
+			//color1 = Color.BLUE;
+			color1 = new Color(0,0,255,128);
 			if(rank == 1) {
 				speed = 2;
 				r = 5;
@@ -59,21 +62,53 @@ public class Enemy {
 		
 		//Stronger, Faster default
 		if(type == 2) {
-			color1 = Color.RED;
+			//color1 = Color.RED;
+			color1 = new Color(255, 0, 0, 128);
 			if(rank == 1) {
 				speed = 3;
 				r = 5;
 				health = 2;
 			}
+			if(rank == 2) {
+				speed = 3;
+				r = 10;
+				health = 3;
+			}
+			if(rank == 3) {
+				speed = 2.5;
+				r =20;
+				health = 3;
+			}
+			if(rank == 4) {
+				speed = 2.5;
+				r = 30;
+				health = 4;
+			}
 		}
 		
 		//Slow but hard to kill enemy
 		if(type == 3) {
-			color1 = Color.GREEN;
+			//color1 = Color.GREEN;
+			color1 = new Color(0, 255, 0, 128);
 			if(rank == 1) {
 				speed = 1.5;
 				r = 5;
 				health = 5;
+			}
+			if(rank == 2) {
+				speed = 1.5;
+				r = 10;
+				health = 6;
+			}
+			if(rank == 3) {
+				speed = 1.5;
+				r = 25;
+				health = 7;
+			}
+			if(rank == 4) {
+				speed = 1.5;
+				r = 45;
+				health = 8;
 			}
 		}
 		
@@ -98,10 +133,12 @@ public class Enemy {
 	//Getters
 	public double getx() { return x; }
 	public double gety() { return y; }
-	public double getr() { return r; }
+	public int getr() { return r; }
 	
 	public int getType() { return type; }
 	public int getRank() { return rank; }
+	
+	public void setSlow(boolean b) { slow = b; }
 	
 	public boolean isDead() { return dead; }	
 	
@@ -121,6 +158,12 @@ public class Enemy {
 			int amount = 0;
 			if(type == 1) {
 				amount = 3;
+			}
+			if(type == 2) {
+				amount = 3;
+			}
+			if(type == 3) {
+				amount = 4;
 			}
 			
 			for(int i = 0; i < amount; i++) {
@@ -142,9 +185,16 @@ public class Enemy {
 	
 	//Update the game
 	public void update() {
-		x += dx;
-		y += dy;
 		
+		if(slow) {
+			x += dx * 0.3;
+			y += dy * 0.3;
+		}
+		else {
+			x += dx;
+		    y += dy;
+		}
+			
 		if(!ready) {
 			if(x > r && x < GamePanel.WIDTH -r &&
 					y > r && y < GamePanel.HEIGHT - r) {
