@@ -19,9 +19,24 @@ public class Player {
 	private boolean up;
 	private boolean down;
 	
+	private boolean firing;
+	private long firingTimer;
+	private long firingDelay;
+	
+	private boolean recovering;
+	private long recoveryTimer;
+	
 	private int lives;
 	private Color color1;
 	private Color color2;
+	
+	private int score;
+	
+	private int powerLevel;
+	private int power;
+	private int[] requiredPower = {
+			1,2,3,4,5
+	};
 	
 	//CONSTRUCTOR
 	public Player() {
@@ -36,14 +51,63 @@ public class Player {
 		lives = 3;
 		color1 = Color.WHITE;
 		color2 = Color.RED;
+		
+		firing = false;
+		firingTimer = System.nanoTime();
+		firingDelay = 200;
+		
+		recovering = false;
+		recoveryTimer = 0;
+		
+		score = 0;
 	}
 	
 	//FUNCTIONS
+	
+	//Getters
+	public int getx() { return x; }
+	public int gety() { return y; }
+	public int getr() { return r; }
+	
+	public int getScore() { return score; }
+	public void addScore(int i) { score += i; }
+	
+    public int getLives() { return lives; }
+    
+    public boolean isRecovering() { return recovering; }
+    
 	public void setLeft(boolean b) { left = b; }
 	public void setRight(boolean b) { right = b; }
 	public void setUp(boolean b) { up = b; }
 	public void setDown(boolean b) { down = b; }
 	
+	public void setFiring(boolean b) { firing = b;}
+	
+	public int getPowerLevel() { return powerLevel; }
+	public int getPower() { return power; }
+	public int getRequiredPower() { return requiredPower[powerLevel]; }
+	
+	public void gainLife() {
+		lives++;
+	}
+	
+	//Will decrement lives 
+	public void loseLife() {
+		lives--;
+		recovering = true;
+		recoveryTimer = System.nanoTime();
+	}
+	
+	//Increased power level based on a passed value
+	public void increasedPower(int i) {
+		power += i;
+		if(power >= requiredPower[powerLevel]) {
+			power -= requiredPower[powerLevel];
+			powerLevel++;
+		}
+	}
+	
+	//Update the game
 	public void update() {
 		
 		if(left) {
@@ -69,17 +133,61 @@ public class Player {
 		
 		dx = 0;
 		dy = 0;
+		
+		//Firing
+		if(firing) {
+			long elapsed = (System.nanoTime() - firingTimer) / 1000000;
+			if(elapsed > firingDelay) {
+				firingTimer = System.nanoTime();
+				
+				if(powerLevel < 2) {
+					GamePanel.bullets.add(new Bullet(270, x, y));
+				}
+				else if(powerLevel < 4 ) {
+					GamePanel.bullets.add(new Bullet(270, x + 5, y));
+					GamePanel.bullets.add(new Bullet(270, x - 5, y));
+				}
+				else {
+					GamePanel.bullets.add(new Bullet(270, x, y));
+					GamePanel.bullets.add(new Bullet(275, x + 5, y));
+					GamePanel.bullets.add(new Bullet(265, x - 5, y));
+				}
+				
+			}
+		}
+		
+		if(recovering){
+		    long elapsed = (System.nanoTime() - recoveryTimer) / 1000000;
+	    	if(elapsed > 2000) {
+	    		recovering = false;
+	    		recoveryTimer = 0;
+	    	}
+		}
 	}
 	
+	//Draw the game
 	public void draw(Graphics2D g) {
 		
-		g.setColor(color1);
-		g.fillOval(x - r, y - r, 2 * r, 2 * r);
+		//If you get hit, change to color #2
+		if(recovering) {
+			g.setColor(color2);
+			g.fillOval(x - r, y - r, 2 * r, 2 * r);
+			
+			g.setStroke(new BasicStroke(3));
+			g.setColor(color2.darker());
+			g.drawOval(x -r, y - r, 2 * r,  2 * r);
+			g.setStroke(new BasicStroke(1));
+		}
+		//Otherwise, you are color #1
+		else {
+	    	g.setColor(color1);
+	    	g.fillOval(x - r, y - r, 2 * r, 2 * r);
 		
-		g.setStroke(new BasicStroke(3));
-		g.setColor(color1.darker());
-		g.drawOval(x -r, y - r, 2 * r,  2 * r);
-		g.setStroke(new BasicStroke(1));
+		    g.setStroke(new BasicStroke(3));
+		    g.setColor(color1.darker());
+		    g.drawOval(x -r, y - r, 2 * r,  2 * r);
+		    g.setStroke(new BasicStroke(1));
+		}
 	}
 
  }
